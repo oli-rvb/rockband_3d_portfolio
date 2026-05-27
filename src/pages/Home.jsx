@@ -1,6 +1,7 @@
-import { useState, Suspense, useEffect, useRef } from 'react'
+import { useState, Suspense, useEffect, useRef, useCallback } from 'react'
 import { Canvas } from '@react-three/fiber'
-import Loader from '../components/Loader'
+import SceneLoader from '../components/SceneLoader'
+import ProgressTracker from '../components/ProgressTracker'
 
 import Island from '../models/Island';
 import Sky from '../models/Sky';
@@ -25,7 +26,10 @@ const Home = () => {
   audioRef.current.loop = true;
   const [isRotating, setIsRotating] = useState(false);
   const [currentStage, setCurrentStage] = useState(1);
+  const [displayStage, setDisplayStage] = useState(1);
+  const [isFading, setIsFading] = useState(false);
   const [isPlayingMusic, setIsPlayingMusic] = useState(false);
+  const [loadingProgress, setLoadingProgress] = useState({ progress: 0, active: true });
   const spotRef = useRef();
 
 
@@ -42,6 +46,22 @@ const Home = () => {
     }
 
   }, [isPlayingMusic])
+
+  useEffect(() => {
+    if (currentStage !== displayStage) {
+      setIsFading(true);
+      const fadeOutTimer = setTimeout(() => {
+        setDisplayStage(currentStage);
+        setIsFading(false);
+      }, 500); // Half of animation duration for fade out
+
+      return () => clearTimeout(fadeOutTimer);
+    }
+  }, [currentStage, displayStage])
+
+  const handleLoaded = useCallback(() => {
+    setLoadingProgress({ progress: 100, active: false });
+  }, []);
 
   const adjustIslandForScreenSize = () => {
     let screenScale = null;
@@ -98,8 +118,17 @@ const Home = () => {
 
   return (
     <section className="w-full h-screen relative">
+      <SceneLoader 
+        progress={loadingProgress.progress} 
+        active={loadingProgress.active}
+        onLoaded={handleLoaded}
+      />
       <div className="absolute top-28 left-0 right-0 z-10 flex items-center justify-center">
-        {currentStage && <HomeInfo currentStage={currentStage} />}
+        {displayStage && (
+          <div className={`fade-card ${isFading ? 'fade-out' : 'fade-in'}`}>
+            <HomeInfo currentStage={displayStage} />
+          </div>
+        )}
       </div>
       <Canvas 
         className={`w-full h-screen bg-transparent ${isRotating ? 'cursor-grabbing' : 'cursor-grab'}`}
@@ -108,6 +137,7 @@ const Home = () => {
         dpr={[1, 2]}
         performance={{ min: 0.5 }}
       >
+        <ProgressTracker onProgressChange={setLoadingProgress} />
         {/* Lights - no Suspense needed */}
         <spotLight 
           position={[4,7,2]} 
@@ -143,7 +173,7 @@ const Home = () => {
         <hemisphereLight skyColor="#b1e1ff" groundColor="84948" intensity={0}/>
         
         {/* Critical models - load first */}
-        <Suspense fallback={<Loader />}>
+        <Suspense fallback={null}>
           <Sky isRotating={isRotating}/>
           <Island 
             position={islandPostion}

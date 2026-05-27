@@ -67,7 +67,27 @@ body:has(.card[data-color="green"]:hover) {
   }
 
   .neo-btn {
-    @apply py-3 px-6 rounded-lg text-blue-500 text-center font-semibold sm:w-1/2 w-[90%] -bottom-5 absolute mx-auto right-0 left-0 flex justify-center items-center gap-3;
+    @apply py-3 rounded-lg text-blue-500 text-center font-semibold -bottom-5 absolute flex justify-center items-center gap-3 whitespace-nowrap;
+    padding-left: 1.75rem;
+    padding-right: 1.75rem;
+    left: 2rem;
+    right: 2rem;
+    width: auto;
+    min-width: fit-content;
+    max-width: none;
+  }
+  
+  @media (min-width: 640px) {
+    .neo-btn {
+      left: 50%;
+      right: auto;
+      transform: translateX(-50%);
+      width: fit-content;
+      min-width: 12rem;
+      max-width: 50%;
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
   }
 
   .cta {
@@ -180,4 +200,234 @@ body:has(.card[data-color="green"]:hover) {
   border: #fff;
   box-shadow: 0.6vmin 0.6vmin #fff, 1vmin 1vmin #d2e4ff, 1vmin 1vmin #d2e4ff,
     0.65vmin 1vmin #d2e4ff, 1vmin 0.65vmin #d2e4ff;
+}
+
+.fade-card {
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+.fade-card.fade-in {
+  opacity: 1;
+  transform: translateY(0);
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.fade-card.fade-out {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─────────── BSH Scene Loader ─────────── */
+.bsh-loader {
+  --bsh-blue: #4589ff;
+  --bsh-blue-dim: rgba(69, 137, 255, 0.18);
+  --bsh-bg: #080809;
+  --bsh-gray-light: #888;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: var(--bsh-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.bsh-loader.is-hiding {
+  opacity: 0;
+}
+
+.bsh-stars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bsh-star {
+  position: absolute;
+  border-radius: 50%;
+  background: white;
+  animation: bshTwinkle var(--d) ease-in-out infinite;
+  animation-delay: var(--delay);
+}
+
+@keyframes bshTwinkle {
+  0%, 100% { opacity: var(--min-op); }
+  50% { opacity: var(--max-op); }
+}
+
+.bsh-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 36px;
+}
+
+.bsh-vinyl-scene {
+  position: relative;
+  width: 220px;
+  height: 220px;
+}
+
+.bsh-vinyl-glow {
+  position: absolute;
+  inset: -24px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--bsh-blue-dim) 0%, transparent 70%);
+  animation: bshGlowPulse 3s ease-in-out infinite;
+}
+
+@keyframes bshGlowPulse {
+  0%, 100% { opacity: 0.5; transform: scale(0.95); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+.bsh-ring-svg {
+  position: absolute;
+  inset: -14px;
+  width: calc(100% + 28px);
+  height: calc(100% + 28px);
+  transform: rotate(-90deg);
+  pointer-events: none;
+}
+
+.bsh-ring-progress {
+  transition: stroke-dashoffset 0.2s linear;
+}
+
+.bsh-vinyl-disc {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: repeating-radial-gradient(
+    circle at center,
+    #111 0px, #111 1.5px,
+    #1a1a1c 1.5px, #1a1a1c 3px
+  );
+  box-shadow: 0 0 0 1px #2a2a2c, 0 8px 40px rgba(0, 0, 0, 0.8);
+  animation: bshSpin 4s linear infinite;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes bshSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.bsh-vinyl-label {
+  width: 80px;
+  height: 80px;
+  border-radius: 10px;
+  background: var(--bsh-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 0 20px rgba(69, 137, 255, 0.5);
+  flex-shrink: 0;
+}
+
+.bsh-vinyl-label-text {
+  font-size: 22px;
+  font-weight: 800;
+  color: white;
+  letter-spacing: 1px;
+  user-select: none;
+}
+
+.bsh-vinyl-hole {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--bsh-bg);
+  z-index: 2;
+}
+
+.bsh-text-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.bsh-band-name {
+  font-size: 26px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+}
+
+.bsh-band-sub {
+  font-size: 11px;
+  color: var(--bsh-gray-light);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+
+.bsh-progress-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 260px;
+}
+
+.bsh-progress-track {
+  width: 100%;
+  height: 1px;
+  background: #222;
+  position: relative;
+  overflow: hidden;
+}
+
+.bsh-progress-fill {
+  height: 100%;
+  background: var(--bsh-blue);
+  box-shadow: 0 0 8px var(--bsh-blue);
+  transition: width 0.2s linear;
+}
+
+.bsh-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+}
+
+.bsh-progress-label {
+  font-size: 9px;
+  color: #444;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.bsh-progress-pct {
+  font-size: 11px;
+  color: var(--bsh-blue);
+  letter-spacing: 1px;
+  font-variant-numeric: tabular-nums;
+  min-width: 36px;
+  text-align: right;
 }

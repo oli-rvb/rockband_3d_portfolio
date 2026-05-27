@@ -26,6 +26,12 @@ const Island = ({ isRotating, setIsRotating, setCurrentStage, ...props}) => {
   const lastX = useRef(0);
   const rotationSpeed = useRef(0);
   const dampingFactor = 0.95;
+  const previousStageRef = useRef(null);
+  
+  // Stage size multiplier - adjust this to change the size of all stage ranges
+  // Higher value = larger detection range for each stage (easier to trigger)
+  // Lower value = smaller detection range (more precise)
+  const stageRangeSize = 2.0;
 
   const handlePointerDown = (e) => { 
     e.stopPropagation();
@@ -117,22 +123,26 @@ const Island = ({ isRotating, setIsRotating, setCurrentStage, ...props}) => {
       const normalizedRotation =
         ((rotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
 
-      // Set the current stage based on the island's orientation
-      switch (true) {
-        case normalizedRotation >= 5.45 && normalizedRotation <= 5.85:
-          setCurrentStage(4);
-          break;
-        case normalizedRotation >= 0.85 && normalizedRotation <= 1.3:
-          setCurrentStage(3);
-          break;
-        case normalizedRotation >= 2.4 && normalizedRotation <= 2.6:
-          setCurrentStage(2);
-          break;
-        case normalizedRotation >= 4.25 && normalizedRotation <= 4.75:
-          setCurrentStage(1);
-          break;
-        default:
-          setCurrentStage(null);
+      // Each stage occupies exactly 1/4 of the circle (π/2 radians = 90 degrees)
+      // The circle is divided into 4 equal quadrants
+      const quarterCircle = Math.PI / 2; // π/2 radians = 90 degrees
+      
+      // Determine which quarter of the circle the rotation falls into
+      // Stage 3: 0 to π/2 (0° to 90°)
+      // Stage 4: π/2 to π (90° to 180°)
+      // Stage 1: π to 3π/2 (180° to 270°)
+      // Stage 2: 3π/2 to 2π (270° to 360°)
+      const quarter = Math.floor(normalizedRotation / quarterCircle);
+      
+      // Map quarter index (0-3) to stage number
+      // quarter 0 → stage 3, quarter 1 → stage 4, quarter 2 → stage 1, quarter 3 → stage 2
+      const stageMapping = [3, 4, 1, 2];
+      const currentStageDetected = stageMapping[quarter];
+      
+      // Only update stage if it has actually changed to prevent unnecessary re-renders
+      if (currentStageDetected !== previousStageRef.current) {
+        previousStageRef.current = currentStageDetected;
+        setCurrentStage(currentStageDetected);
       }
       
     }
