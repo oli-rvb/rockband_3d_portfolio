@@ -1,4 +1,3 @@
-import React from 'react'
 import { VerticalTimeline, VerticalTimelineElement }  from 'react-vertical-timeline-component';
 import 'react-vertical-timeline-component/style.min.css';
 
@@ -21,7 +20,7 @@ const About = () => {
 
         <div className='mt-16 flex flex-wrap gap-12'>
           {skills.map((skill) => (
-            <div className='block-container w-20 h-20'>
+            <div className='block-container w-20 h-20' key={skill.name}>
               <div className='btn-back rounded-xl'></div>
               <div className='btn-front rounded-xl flex justify-center items-center'>
                 <img 

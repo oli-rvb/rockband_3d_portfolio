@@ -1,8 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useProgress } from '@react-three/drei'
 
 const RING_CIRC = 691.15 // 2 * pi * 110
 
-const SceneLoader = ({ progress = 0, active = true, onLoaded }) => {
+const SceneLoader = () => {
+  // useProgress is a plain zustand store bound to THREE.DefaultLoadingManager,
+  // so it works here even though SceneLoader renders outside the <Canvas>.
+  const { progress, active } = useProgress()
   const [isVisible, setIsVisible] = useState(true)
   const [isHiding, setIsHiding] = useState(false)
 
@@ -11,14 +15,13 @@ const SceneLoader = ({ progress = 0, active = true, onLoaded }) => {
       setIsHiding(true)
       const timer = setTimeout(() => {
         setIsVisible(false)
-        if (onLoaded) onLoaded()
       }, 300)
       return () => clearTimeout(timer)
     } else if (active) {
       setIsVisible(true)
       setIsHiding(false)
     }
-  }, [active, progress, onLoaded])
+  }, [active, progress])
 
   const stars = useMemo(() => {
     return Array.from({ length: 120 }, () => ({

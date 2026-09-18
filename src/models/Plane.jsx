@@ -1,26 +1,30 @@
-import { useRef, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useAnimations, useGLTF } from '@react-three/drei'
+import { useThree } from '@react-three/fiber'
 
+import { DRACO_DECODER_PATH } from '../utils/draco'
 import planeScene from '../assets/3d/plane.glb';
 
+useGLTF.preload(planeScene, DRACO_DECODER_PATH)
+
 const Plane = ({ isRotating, ...props}) => {
-    const ref = useRef();
-    const {scene, animations} = useGLTF(planeScene);
+    const { invalidate } = useThree();
+    const {scene, animations} = useGLTF(planeScene, DRACO_DECODER_PATH);
     const { actions } = useAnimations(animations, scene);
 
     useEffect(() => {
-        console.log({isRotating});
         if(isRotating){
-            actions['Take 001'].play();
+            actions['Take 001']?.play();
         } else {
-            actions['Take 001'].stop();
+            actions['Take 001']?.stop();
         }
-    }, [actions, isRotating])
+        invalidate();
+    }, [actions, isRotating, invalidate])
 
     return (
-        <mesh {...props} castShadow receiveShadow>
+        <group {...props}>
             <primitive object={scene} />
-        </mesh>
+        </group>
     )
 }
 

@@ -8,3 +8,10 @@ RewriteCond %{REQUEST_FILENAME} !-d
 
 # Everything else → index.html (React Router handles routing)
 RewriteRule ^ index.html [L]
+
+# Vite emits content-hashed files (name-xxxxxxxx.ext): safe to cache for a year.
+<IfModule mod_headers.c>
+  <FilesMatch "-[a-f0-9]{8}\.(js|css|glb|png|jpe?g|svg|webp|mp3)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+</IfModule>

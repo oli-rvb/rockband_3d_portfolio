@@ -1,7 +1,6 @@
-import { useState, Suspense, useEffect, useRef, useCallback } from 'react'
+import { useState, Suspense, useEffect, useRef } from 'react'
 import { Canvas } from '@react-three/fiber'
 import SceneLoader from '../components/SceneLoader'
-import ProgressTracker from '../components/ProgressTracker'
 
 import Island from '../models/Island';
 import Sky from '../models/Sky';
@@ -11,39 +10,43 @@ import OttoVibing from '../models/OttoVibing';
 
 import OneShotTest from '../assets/OneShotTest.mp3';
 import { soundoff, soundon } from '../assets/icons';
-import { preloadModels } from '../utils/preload';
 
 
 
 const Home = () => {
-  // Preload models as early as possible
-  useEffect(() => {
-    preloadModels();
-  }, []);
-
-  const audioRef = useRef(new Audio(OneShotTest));
-  audioRef.current.volume = 0.4;
-  audioRef.current.loop = true;
+  const audioRef = useRef(null);
   const [isRotating, setIsRotating] = useState(false);
   const [currentStage, setCurrentStage] = useState(1);
   const [displayStage, setDisplayStage] = useState(1);
   const [isFading, setIsFading] = useState(false);
   const [isPlayingMusic, setIsPlayingMusic] = useState(false);
-  const [loadingProgress, setLoadingProgress] = useState({ progress: 0, active: true });
-  const spotRef = useRef();
   const islandRef = useRef();
 
+  useEffect(() => {
+    const audio = new Audio(OneShotTest);
+    audio.preload = 'none';
+    audio.volume = 0.4;
+    audio.loop = true;
+    audioRef.current = audio;
 
+    return () => {
+      audio.pause();
+      audioRef.current = null;
+    }
+  }, []);
 
 
 
   useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
     if(isPlayingMusic) {
-      audioRef.current.play();
+      audio.play().catch(() => {});
     }
 
     return () => {
-      audioRef.current.pause();
+      audio.pause();
     }
 
   }, [isPlayingMusic])
@@ -59,10 +62,6 @@ const Home = () => {
       return () => clearTimeout(fadeOutTimer);
     }
   }, [currentStage, displayStage])
-
-  const handleLoaded = useCallback(() => {
-    setLoadingProgress({ progress: 100, active: false });
-  }, []);
 
   const adjustIslandForScreenSize = () => {
     let screenScale = null;
@@ -95,35 +94,9 @@ const Home = () => {
   const [islandScale, islandPostion, islandRotation] = adjustIslandForScreenSize();
   const [planeScale, planePosition] = adjustPlaneForScreenSize();
 
-  /* useGUI((gui) => {
-    //control the position
-    const positionFolder = gui.addFolder("Position Spotlight");
-    positionFolder.add(spotRef.current.position, "x", -50, 50);
-    positionFolder.add(spotRef.current.position, "y", -300, 300);
-    positionFolder.add(spotRef.current.position, "z", -50, 50);
-
-    //control the rotation
-    const rotationFolder = gui.addFolder("Rotation");
-    rotationFolder.add(spotRef.current.rotation, "x", -Math.PI, Math.PI);
-    rotationFolder.add(spotRef.current.rotation, "y", -Math.PI, Math.PI);
-    rotationFolder.add(spotRef.current.rotation, "z", -Math.PI, Math.PI);
-
-    //control the scale
-    const sclaeFolder = gui.addFolder("Scale");
-    sclaeFolder.add(spotRef.current.scale, "x", -100, 100);
-    sclaeFolder.add(spotRef.current.scale, "y", -100, 100);
-    sclaeFolder.add(spotRef.current.scale, "z", -100, 100);
-
-});  */
-
-
   return (
     <section className="w-full h-screen relative">
-      <SceneLoader 
-        progress={loadingProgress.progress} 
-        active={loadingProgress.active}
-        onLoaded={handleLoaded}
-      />
+      <SceneLoader />
       <div className="absolute top-28 left-0 right-0 z-10 flex items-center justify-center">
         {displayStage && (
           <div className={`fade-card ${isFading ? 'fade-out' : 'fade-in'}`}>
@@ -131,48 +104,22 @@ const Home = () => {
           </div>
         )}
       </div>
-      <Canvas 
+      <Canvas
         className={`w-full h-screen bg-transparent ${isRotating ? 'cursor-grabbing' : 'cursor-grab'}`}
         camera={{near: 1, far: 1000, rotation: [0.15, 0, 0], fov: 50, position:[0, 3, 25]}}
         shadows
         dpr={[1, 2]}
-        performance={{ min: 0.5 }}
+        frameloop="demand"
       >
-        <ProgressTracker onProgressChange={setLoadingProgress} />
-        {/* Lights - no Suspense needed */}
-        <spotLight 
-          position={[4,7,2]} 
-          intensity={0} 
-          angle={Math.PI/2} 
-          color="#0c8cbf" 
-          castShadow
-          shadow-mapSize-height={1024}
-          shadow-mapSize-width={1024}
-          shadow-camera-near={0.1}
-          shadow-camera-far={50}
-          shadow-camera-left={-0.5} 
-          shadow-camera-right={0.5} 
-          shadow-camera-top={0.5} 
-          shadow-camera-bottom={-0.5}
-        />
-        <directionalLight position={[3, 1, 1]} castShadow intensity={0} shadow-camera-left={-20} shadow-camera-right={20} shadow-camera-top={20} shadow-camera-bottom={-20} shadow-mapSize={1024}/>
         <pointLight
-          position={[0, 8, 0]} 
-          castShadow 
+          position={[0, 8, 0]}
           intensity={900}
-          shadow-mapSize-height={1024}
-          shadow-mapSize-width={1024}
+          castShadow
+          shadow-mapSize={[1024, 1024]}
           shadow-camera-near={1}
           shadow-camera-far={100}
-          shadow-camera-left={-1} 
-          shadow-camera-right={1} 
-          shadow-camera-top={1} 
-          shadow-camera-bottom={-1}
         />
-        <spotLight position={[0,9,-25]} intensity={0} rotation={[2, 0, 0]} castShadow shadow-mapSize={1024}/>
-        <ambientLight intensity={0}/>
-        <hemisphereLight skyColor="#b1e1ff" groundColor="84948" intensity={0}/>
-        
+
         {/* Critical models - load first */}
         <Suspense fallback={null}>
           <Sky islandRef={islandRef} baseRotationY={islandRotation[1]} />

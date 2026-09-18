@@ -6,16 +6,19 @@ Source: https://sketchfab.com/3d-models/fox-f372c04de44640fbb6a4f9e4e5845c78
 Title: Fox
 */
 
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useGLTF, useAnimations } from "@react-three/drei";
 
+import { DRACO_DECODER_PATH } from '../utils/draco'
 import scene from '../assets/3d/fox.glb'
+
+useGLTF.preload(scene, DRACO_DECODER_PATH)
 
 const Fox = ({ currentAnimation, ...props }) => {
   const group = useRef();
-  const { nodes, materials, animations } = useGLTF(scene);
+  const { nodes, materials, animations } = useGLTF(scene, DRACO_DECODER_PATH);
   const { actions } = useAnimations(animations, group);
-  
+
   useEffect(() => {
     Object.values(actions).forEach((action) => action.stop());
 

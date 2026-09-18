@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useAnimations, useGLTF } from "@react-three/drei";
-import { useGUI } from '../hooks/useGUI';
 
+import { DRACO_DECODER_PATH } from '../utils/draco'
 import birdScene from "../assets/3d/bird.glb";
 
 // 3D Model from: https://sketchfab.com/3d-models/phoenix-bird-844ba0cf144a413ea92c779f18912042
@@ -10,7 +10,7 @@ export function Bird() {
   const birdRef = useRef();
 
   // Load the 3D model and animations from the provided GLTF file
-  const { scene, animations } = useGLTF(birdScene);
+  const { scene, animations } = useGLTF(birdScene, DRACO_DECODER_PATH);
 
   // Get access to the animations for the bird
   const { actions } = useAnimations(animations, birdRef);
@@ -43,7 +43,7 @@ export function Bird() {
   // Note: Animation names can be found on the Sketchfab website where the 3D model is hosted.
   useEffect(() => {
     actions["Take 001"].play();
-  }, []);
+  }, [actions]);
 
   useFrame(({ clock, camera }) => {
 
@@ -74,8 +74,7 @@ export function Bird() {
   return (
     // to create and display 3D objects
     <mesh ref={birdRef} position={[-15, 5, -5]} scale={[0.008, 0.008, 0.008]}>
-      // use the primitive element when you want to directly embed a complex 3D
-      model or scene
+      {/* use the primitive element when you want to directly embed a complex 3D model or scene */}
       <primitive object={scene} />
     </mesh>
   );

@@ -1,7 +1,9 @@
-import React from 'react'
 import { Link } from 'react-router-dom'
 
-const CTA = () => {
+// Named and exported inline (rather than `const CTA = () => {}` + `export default CTA`):
+// eslint-plugin-react-refresh can't verify an all-uppercase name like "CTA" refers to a
+// component when it's exported by reference, and flags it as a non-component export.
+export default function CTA() {
   return (
     <section className='cta'>
         <p className='cta-text'>
@@ -13,5 +15,3 @@ const CTA = () => {
     </section>
   )
 }
-
-export default CTA
