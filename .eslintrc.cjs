@@ -1,0 +1,15 @@
+module.exports = {
+  root: true,
+  env: { browser: true, es2020: true, node: true },
+  extends: ['eslint:recommended', 'plugin:react/recommended', 'plugin:react/jsx-runtime', 'plugin:react-hooks/recommended'],
+  ignorePatterns: ['dist', '.eslintrc.cjs', 'public'],
+  parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
+  settings: { react: { version: '18.2' } },
+  plugins: ['react-refresh'],
+  rules: {
+    'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+    'react/prop-types': 'off', // plain JS project
+    'react/no-unknown-property': 'off', // react-three-fiber JSX (position, intensity, castShadow, ...)
+    'react/no-unescaped-entities': 'off', // French copy with apostrophes
+  },
+}
