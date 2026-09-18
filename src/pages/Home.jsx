@@ -31,6 +31,7 @@ const Home = () => {
   const [isPlayingMusic, setIsPlayingMusic] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState({ progress: 0, active: true });
   const spotRef = useRef();
+  const islandRef = useRef();
 
 
 
@@ -174,8 +175,9 @@ const Home = () => {
         
         {/* Critical models - load first */}
         <Suspense fallback={null}>
-          <Sky isRotating={isRotating}/>
-          <Island 
+          <Sky islandRef={islandRef} baseRotationY={islandRotation[1]} />
+          <Island
+            ref={islandRef}
             position={islandPostion}
             scale={islandScale}
             rotation={islandRotation}
