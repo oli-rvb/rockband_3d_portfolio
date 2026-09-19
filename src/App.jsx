@@ -10,7 +10,7 @@ const Contact = lazy(() => import('./pages/Contact'));
 
 const App = () => {
   return (
-    <main className="bg-slate-300/20 h-FULL">
+    <main className="bg-slate-300/20 min-h-screen">
       <Router basename="/bluesuburbhour">
         <Navbar />
         <Suspense fallback={null}>
