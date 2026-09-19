@@ -40,9 +40,31 @@ function preloadHomeModels() {
   }
 }
 
+// Third-party code the Home page loads eagerly, split out of the app chunk so an app-code
+// deploy only invalidates the small index chunk (hashed files are cached for a year, see
+// public/.htaccess). Only list packages Home needs up front: a lazy-route-only dependency
+// (the About timeline, emailjs) placed here would join the initial download.
+// React and R3F share one chunk on purpose: split apart, Rollup's shared CommonJS helper
+// lands in one of them and the two chunks end up importing each other.
+const VENDOR_CHUNKS = {
+  three: /[\\/]node_modules[\\/]three[\\/]/,
+  vendor: /[\\/]node_modules[\\/](react|react-dom|scheduler|react-router|react-router-dom|@remix-run[\\/]router|@react-three[\\/][^\\/]+|three-stdlib)[\\/]/,
+}
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), preloadHomeModels()],
   assetsInclude: ['**/*.glb'],
-  base: '/bluesuburbhour/'
+  base: '/bluesuburbhour/',
+  build: {
+    // The three chunk is ~650 kB on its own and cannot shrink: R3F imports the whole
+    // `three` namespace to build its JSX catalogue, so tree-shaking removes nothing.
+    // 700 kB accepts it while still flagging any other chunk that grows unexpectedly.
+    chunkSizeWarningLimit: 700,
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => Object.keys(VENDOR_CHUNKS).find((name) => VENDOR_CHUNKS[name].test(id)),
+      },
+    },
+  },
 })
