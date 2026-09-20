@@ -1,15 +1,18 @@
-import { Link } from 'react-router-dom';
+import useServerClosed from '../hooks/useServerClosed';
 import { arrow } from '../assets/icons';
 
-const InfoBox = ({ text, link, btnText}) => (
+const InfoBox = ({ text, btnText}) => {
+  const { open } = useServerClosed();
+  return (
     <div className="info-box"> 
         <p className='font-medium sm:text-xl text-center mx-6'>{text}</p>
-        <Link to={link} className='neo-brutalism-white neo-btn' target="_blank">
+        <button type="button" onClick={open} className='neo-brutalism-white neo-btn cursor-pointer'>
             {btnText}
             <img src={arrow} className='w-4 h-4 object-contain'/>
-        </Link>
+        </button>
     </div>
-)
+  );
+}
 
 const renderContent = {
     1: (
@@ -21,21 +24,18 @@ const renderContent = {
     2: (
         <InfoBox
             text= "Dernières infos !"
-            link="https://bluesuburbhour.com/index.php/a-venir/"
             btnText="Prochain concert"
         />
     ),
     3: (
         <InfoBox
             text= "Nos vidéos"
-            link="https://bluesuburbhour.com/index.php/video/"
             btnText="Portfolio"
         />
     ),
     4: (
         <InfoBox
             text= "Newsletter & Réseaux"
-            link="https://bluesuburbhour.com/index.php/contact/"
             btnText="Suivez-nous"
         />
     ),
