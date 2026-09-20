@@ -226,6 +226,225 @@ body:has(.card[data-color="green"]:hover) {
   }
 }
 
+/* ─────────── Rotate hint (Home) ─────────── */
+/* Big centered intro on first arrival, small bottom reminder after each stop. */
+.rotate-hint-wrap {
+  position: absolute;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1rem;
+  pointer-events: none;
+}
+
+/* Light see-through dim behind the intro so the white glyph and text stand out. */
+.rotate-hint-wrap.is-intro {
+  inset: 0;
+  background: rgba(8, 12, 30, 0.35);
+  animation: rotateHintDimIn 0.8s ease-out both;
+}
+
+.rotate-hint-wrap.is-intro.is-leaving {
+  animation: rotateHintDimOut 0.5s ease-in-out both;
+}
+
+.rotate-hint-wrap.is-small {
+  left: 0;
+  right: 0;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 4rem);
+}
+
+.rotate-hint {
+  --swipe-time: 2.6s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: #fff;
+  pointer-events: none;
+  user-select: none;
+  /* No box: a dark halo keeps the white glyph legible over bright ground. */
+  filter: drop-shadow(0 1px 3px rgba(8, 12, 30, 0.55)) drop-shadow(0 0 14px rgba(8, 12, 30, 0.35));
+}
+
+.rotate-hint.is-in {
+  animation: rotateHintIn 0.8s ease-out both;
+}
+
+.rotate-hint.is-out {
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+.rotate-hint-text {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-align: center;
+}
+
+.is-small .rotate-hint {
+  gap: 0.375rem;
+}
+
+.is-small .rotate-hint-text {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Everything inside the glyph is sized in em: font-size scales the whole gesture. */
+.swipe {
+  position: relative;
+  width: 16em;
+  height: 4.5em;
+  font-size: 1rem;
+}
+
+.is-small .swipe {
+  font-size: 0.5rem;
+}
+
+.swipe-lane {
+  position: absolute;
+  left: 1.25em;
+  right: 1.25em;
+  top: 50%;
+  height: 0.1em;
+  margin-top: -0.05em;
+  border-radius: 1em;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.7),
+    rgba(255, 255, 255, 0.15) 30%,
+    rgba(255, 255, 255, 0.15) 70%,
+    rgba(255, 255, 255, 0.7)
+  );
+}
+
+.swipe-arrow {
+  position: absolute;
+  top: 50%;
+  width: 1.5em;
+  height: 1.5em;
+  margin-top: -0.75em;
+  animation: swipeCue var(--swipe-time) ease-in-out infinite;
+}
+
+.swipe-arrow-left {
+  left: 0;
+}
+
+.swipe-arrow-right {
+  right: 0;
+  animation-delay: calc(var(--swipe-time) / -2);
+}
+
+/* Zero-size anchor at the glyph center; hand and trail hang off it. */
+.swipe-mover {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  animation: swipeMove var(--swipe-time) ease-in-out infinite;
+}
+
+.swipe-hand {
+  position: absolute;
+  width: 4em;
+  height: 4em;
+  margin: -2em 0 0 -2em;
+  animation: swipeHand var(--swipe-time) ease-in-out infinite;
+}
+
+.swipe-trail {
+  position: absolute;
+  top: -0.2em;
+  left: -8em;
+  width: 8em;
+  height: 0.4em;
+  border-radius: 1em;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), #fff);
+  transform-origin: 100% 50%;
+  animation: swipeTrail var(--swipe-time) ease-in-out infinite;
+}
+
+/* Right sweep 0-42%, press at the right end, left sweep 50-92%, press at the left end. */
+@keyframes rotateHintDimIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes rotateHintDimOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes swipeMove {
+  0% { transform: translateX(-4.5em); }
+  42%, 50% { transform: translateX(4.5em); }
+  92%, 100% { transform: translateX(-4.5em); }
+}
+
+@keyframes swipeHand {
+  0%, 100% { transform: rotate(0deg) scale(0.88); }
+  8%, 34% { transform: rotate(9deg) scale(1); }
+  42%, 50% { transform: rotate(0deg) scale(0.88); }
+  58%, 84% { transform: rotate(-9deg) scale(1); }
+  92% { transform: rotate(0deg) scale(0.88); }
+}
+
+@keyframes swipeTrail {
+  0%, 42% { transform: scaleX(0.2); opacity: 0; }
+  8%, 34% { transform: scaleX(1); opacity: 1; }
+  50% { transform: scaleX(-0.2); opacity: 0; }
+  58%, 84% { transform: scaleX(-1); opacity: 1; }
+  92%, 100% { transform: scaleX(-0.2); opacity: 0; }
+}
+
+@keyframes swipeCue {
+  0%, 100% { opacity: 1; }
+  15%, 85% { opacity: 0.4; }
+}
+
+@keyframes rotateHintIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 639px) {
+  .swipe {
+    font-size: 0.875rem;
+  }
+
+  .is-small .swipe {
+    font-size: 0.45rem;
+  }
+
+  .rotate-hint-text {
+    font-size: 1rem;
+  }
+
+  .is-small .rotate-hint-text {
+    font-size: 0.6875rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .swipe-mover,
+  .swipe-hand,
+  .swipe-arrow {
+    animation: none;
+  }
+
+  .swipe-trail {
+    display: none;
+  }
+}
+
 /* ─────────── BSH Scene Loader ─────────── */
 .bsh-loader {
   --bsh-blue: #4589ff;
