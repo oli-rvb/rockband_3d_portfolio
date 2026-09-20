@@ -6,6 +6,7 @@ import Island from '../models/Island';
 import Sky from '../models/Sky';
 import Plane from '../models/Plane';
 import HomeInfo from '../components/HomeInfo';
+import RotateHint from '../components/RotateHint';
 import OttoVibing from '../models/OttoVibing';
 
 import OneShotTest from '../assets/OneShotTest.mp3';
@@ -153,6 +154,8 @@ const Home = () => {
           />
         </Suspense>
       </Canvas>
+
+      <RotateHint isRotating={isRotating} />
 
       <div className='absolute bottom-2 left-2'>
         <img 
