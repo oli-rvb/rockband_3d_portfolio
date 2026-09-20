@@ -66,8 +66,6 @@ npx @gltf-transform/cli@4 draco tmp.glb out.glb
 
 `instance` preserves node names for anything not batched (e.g. Island's ground node `ile` and the 4 skinned musician meshes); batched nodes come back as unnamed `InstancedMesh`es once loaded by three's `GLTFLoader`.
 
-After changing any file under `src/assets/3d/`, regenerate `bluesuburbhour.zip` from a fresh `npm run build` before shipping — it's a committed production snapshot, not derived automatically.
-
 ### Debug GUI
 
 `src/hooks/useGUI.jsx` wraps `lil-gui` in a `useEffect`. Several call sites (e.g. the commented-out block in `OttoVibing.jsx`) use it to tweak light/object transforms live. Keep these blocks commented out in committed code, and keep the `useGUI` import itself commented out or removed alongside them — an unused import fails lint, and an active block will throw at mount if the ref it reads is undefined.
