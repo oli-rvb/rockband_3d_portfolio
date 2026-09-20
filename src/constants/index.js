@@ -164,6 +164,8 @@ export const experiences = [
     },
 ];
 
+export const INSTAGRAM_URL = 'https://www.instagram.com/bluesuburbhour/';
+
 export const socialLinks = [
     {
         name: 'Contact',

@@ -1,5 +1,6 @@
 import { NavLink, useLocation } from "react-router-dom"
 import useServerClosed from "../hooks/useServerClosed"
+import { INSTAGRAM_URL } from "../constants"
 
 const Navbar = () => {
   // Home draws the header over the dark 3D scene; every other page has a light background.
@@ -16,9 +17,9 @@ const Navbar = () => {
             <button type="button" onClick={open} className={`${linkClass} cursor-pointer`}>
                 Concerts
             </button>
-            <button type="button" onClick={open} className={`${linkClass} cursor-pointer`}>
+            <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className={`${linkClass} cursor-pointer`}>
                 Newsletter
-            </button>
+            </a>
 
         </nav>
     </header>

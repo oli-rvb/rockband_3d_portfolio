@@ -1,15 +1,28 @@
 import useServerClosed from '../hooks/useServerClosed';
 import { arrow } from '../assets/icons';
+import { INSTAGRAM_URL } from '../constants';
 
-const InfoBox = ({ text, btnText}) => {
+const InfoBox = ({ text, btnText, href }) => {
   const { open } = useServerClosed();
+  const btnClass = 'neo-brutalism-white neo-btn cursor-pointer';
+  const btnContent = (
+    <>
+        {btnText}
+        <img src={arrow} className='w-4 h-4 object-contain'/>
+    </>
+  );
   return (
     <div className="info-box"> 
         <p className='font-medium sm:text-xl text-center mx-6'>{text}</p>
-        <button type="button" onClick={open} className='neo-brutalism-white neo-btn cursor-pointer'>
-            {btnText}
-            <img src={arrow} className='w-4 h-4 object-contain'/>
-        </button>
+        {href ? (
+            <a href={href} target="_blank" rel="noopener noreferrer" className={btnClass}>
+                {btnContent}
+            </a>
+        ) : (
+            <button type="button" onClick={open} className={btnClass}>
+                {btnContent}
+            </button>
+        )}
     </div>
   );
 }
@@ -37,6 +50,7 @@ const renderContent = {
         <InfoBox
             text= "Newsletter & Réseaux"
             btnText="Suivez-nous"
+            href={INSTAGRAM_URL}
         />
     ),
 }
